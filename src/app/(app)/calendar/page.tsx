@@ -1,0 +1,76 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { isAdmin } from "@/lib/permissions";
+import Header from "@/components/layout/Header";
+import CalendarView from "@/components/tasks/CalendarView";
+
+export default async function CalendarPage() {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
+  const admin = isAdmin(session);
+  const userId = session?.user?.id;
+
+  // タスク（期限あり）
+  const taskWhere = admin
+    ? { deadline: { not: null } }
+    : { deadline: { not: null }, assigneeId: userId };
+
+  const tasks = await prisma.task.findMany({
+    where: taskWhere,
+    select: {
+      id: true,
+      title: true,
+      priority: true,
+      status: true,
+      deadline: true,
+      progress: true,
+      assignee: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { deadline: "asc" },
+  });
+
+  // サブタスク（期限あり）
+  const subTaskWhere = admin
+    ? { deadline: { not: null } }
+    : { deadline: { not: null }, task: { assigneeId: userId } };
+
+  const subTasks = await prisma.subTask.findMany({
+    where: subTaskWhere,
+    select: {
+      id: true,
+      title: true,
+      isCompleted: true,
+      deadline: true,
+      taskId: true,
+      task: { select: { id: true, title: true } },
+    },
+    orderBy: { deadline: "asc" },
+  });
+
+  // Date → ISO文字列にシリアライズ
+  const serializedTasks = tasks.map((t) => ({
+    ...t,
+    deadline: t.deadline ? t.deadline.toISOString() : null,
+  }));
+
+  const serializedSubTasks = subTasks.map((s) => ({
+    ...s,
+    deadline: s.deadline ? s.deadline.toISOString() : null,
+  }));
+
+  return (
+    <div className="flex flex-col h-full">
+      <Header title="カレンダー" />
+      <div className="flex-1 overflow-auto p-6">
+        <p className="text-sm text-gray-500 mb-5">
+          期限が設定されたタスク・ステップをカレンダーで確認できます。
+          {!admin && "（自分が担当するタスクのみ表示）"}
+        </p>
+        <CalendarView tasks={serializedTasks} subTasks={serializedSubTasks} />
+      </div>
+    </div>
+  );
+}
