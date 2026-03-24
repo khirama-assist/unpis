@@ -6,9 +6,19 @@ import path from "path";
 type AnyPrismaClient = any;
 
 function createPrismaClient(): AnyPrismaClient {
-  const dbPath = path.join(process.cwd(), "dev.db");
-  const url = `file:${dbPath}`;
-  const adapter = new PrismaLibSql({ url });
+  let adapter;
+  if (process.env.TURSO_DATABASE_URL) {
+    // 本番環境: Turso（クラウドDB）を使用
+    adapter = new PrismaLibSql({
+      url: process.env.TURSO_DATABASE_URL,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    });
+  } else {
+    // 開発環境: ローカルSQLiteファイルを使用
+    const dbPath = path.join(process.cwd(), "dev.db");
+    const url = `file:${dbPath}`;
+    adapter = new PrismaLibSql({ url });
+  }
   // Prisma 7 requires adapter to be passed
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new (PrismaClient as any)({ adapter });
