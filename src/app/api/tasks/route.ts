@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   if (!session) return Response.json({ error: "未認証" }, { status: 401 });
 
   const body = await request.json();
-  const { title, description, priority, status, deadline, assigneeId, subTasks } = body;
+  const { title, description, priority, status, deadline, startAt, assigneeId, subTasks } = body;
 
   if (!title?.trim()) {
     return Response.json({ error: "タイトルは必須です" }, { status: 400 });
@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       description: description?.trim() || null,
       priority: priority || "MEDIUM",
       status: status || "TODO",
+      startAt: startAt ? new Date(startAt) : null,
       deadline: deadline ? new Date(deadline) : null,
       progress: 0,
       assigneeId: effectiveAssigneeId || null,

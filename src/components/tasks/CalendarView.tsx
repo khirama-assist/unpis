@@ -11,6 +11,7 @@ import {
   PRIORITY_LABELS,
   PRIORITY_COLORS,
 } from "@/types";
+import TimeGrid from "./TimeGrid";
 
 // ===== 型定義 =====
 type CalendarViewMode = "month" | "week" | "day";
@@ -20,6 +21,7 @@ interface CalendarTask {
   title: string;
   priority: Priority;
   status: TaskStatus;
+  startAt: string | null;
   deadline: string | null;
   progress: number;
   assignee: { id: string; name: string; email: string } | null;
@@ -320,66 +322,9 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
 
         {/* コンテンツ */}
         <div className="p-4 space-y-4">
-          {/* タスクセクション */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <p className="text-sm font-semibold text-gray-600">タスク</p>
-              <span className="text-xs text-gray-400">{dayTasks.length}件</span>
-            </div>
-
-            {dayTasks.length === 0 ? (
-              <p className="text-sm text-gray-300 pl-1">この日のタスクはありません</p>
-            ) : (
-              <div className="space-y-2">
-                {dayTasks.map((task) => {
-                  const overdue = task.status !== "DONE" && isOverdue(new Date(task.deadline!), today);
-                  return (
-                    <Link key={task.id} href={`/tasks/${task.id}`}>
-                      <div className={`p-3 rounded-lg border transition-colors cursor-pointer ${
-                        overdue ? "border-red-200 bg-red-50 hover:bg-red-100"
-                        : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
-                      }`}>
-                        <p className={`text-sm font-medium mb-1.5 leading-snug ${
-                          task.status === "DONE" ? "text-gray-400 line-through"
-                          : overdue ? "text-red-800"
-                          : "text-gray-800"
-                        }`}>
-                          {task.title}
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${PRIORITY_COLORS[task.priority]}`}>
-                            {PRIORITY_LABELS[task.priority]}優先
-                          </span>
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${TASK_STATUS_COLORS[task.status]}`}>
-                            {TASK_STATUS_LABELS[task.status]}
-                          </span>
-                          {overdue && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-red-200 text-red-800">期限超過</span>
-                          )}
-                        </div>
-                        {task.assignee && (
-                          <p className="text-[10px] text-gray-400 mt-1">担当：{task.assignee.name}</p>
-                        )}
-                        {task.progress > 0 && (
-                          <div className="mt-2">
-                            <div className="flex justify-between text-[10px] text-gray-400 mb-0.5">
-                              <span>進捗</span><span>{task.progress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-1">
-                              <div className={`h-1 rounded-full ${task.progress === 100 ? "bg-emerald-500" : task.progress >= 50 ? "bg-emerald-400" : "bg-emerald-300"}`}
-                                style={{ width: `${task.progress}%` }} />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+          {/* タイムグリッド */}
+          <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 280px)" }}>
+            <TimeGrid date={currentDate} tasks={tasks} />
           </div>
 
           {/* サブタスクセクション */}

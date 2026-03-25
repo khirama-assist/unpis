@@ -49,6 +49,7 @@ export interface TaskData {
   priority: Priority;
   status: TaskStatus;
   deadline: string | null;
+  startAt: string | null;
   progress: number;
   assigneeId: string | null;
   assignee: { id: string; name: string; email: string } | null;

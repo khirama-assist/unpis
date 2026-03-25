@@ -15,8 +15,8 @@ export default async function CalendarPage() {
 
   // タスク（期限あり）
   const taskWhere = admin
-    ? { deadline: { not: null } }
-    : { deadline: { not: null }, assigneeId: userId };
+    ? {}
+    : { assigneeId: userId };
 
   const tasks = await prisma.task.findMany({
     where: taskWhere,
@@ -25,6 +25,7 @@ export default async function CalendarPage() {
       title: true,
       priority: true,
       status: true,
+      startAt: true,
       deadline: true,
       progress: true,
       assignee: { select: { id: true, name: true, email: true } },
@@ -53,6 +54,7 @@ export default async function CalendarPage() {
   // Date → ISO文字列にシリアライズ
   const serializedTasks = tasks.map((t) => ({
     ...t,
+    startAt: t.startAt ? t.startAt.toISOString() : null,
     deadline: t.deadline ? t.deadline.toISOString() : null,
   }));
 

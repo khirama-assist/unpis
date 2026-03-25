@@ -16,9 +16,11 @@ interface TaskFormProps {
   isAdmin: boolean;
   currentUserId: string;
   defaultDeadline?: string; // カレンダーから渡される "YYYY-MM-DD"
+  defaultStartAt?: string;  // 開始時間 "HH:MM"
+  defaultDeadlineTime?: string; // 終了時間 "HH:MM"
 }
 
-export default function TaskForm({ task, members, isAdmin, currentUserId, defaultDeadline = "" }: TaskFormProps) {
+export default function TaskForm({ task, members, isAdmin, currentUserId, defaultDeadline = "", defaultStartAt = "", defaultDeadlineTime = "" }: TaskFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
@@ -26,6 +28,12 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
   const [status, setStatus] = useState<TaskStatus>(task?.status ?? "TODO");
   const [deadline, setDeadline] = useState(
     task?.deadline ? new Date(task.deadline).toISOString().split("T")[0] : defaultDeadline
+  );
+  const [startAtTime, setStartAtTime] = useState(
+    task?.startAt ? new Date(task.startAt).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultStartAt
+  );
+  const [deadlineTime, setDeadlineTime] = useState(
+    task?.deadline && task.deadline.includes("T") ? new Date(task.deadline).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultDeadlineTime
   );
   const [assigneeId, setAssigneeId] = useState(task?.assigneeId ?? currentUserId);
   const [subTasks, setSubTasks] = useState<SubTaskInput[]>(
@@ -60,6 +68,13 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
     const url = task ? `/api/tasks/${task.id}` : "/api/tasks";
     const method = task ? "PUT" : "POST";
 
+    const startAt = deadline && startAtTime
+      ? `${deadline}T${startAtTime}:00`
+      : null;
+    const deadlineWithTime = deadline && deadlineTime
+      ? `${deadline}T${deadlineTime}:00`
+      : deadline || null;
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -68,7 +83,8 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
         description,
         priority,
         status,
-        deadline: deadline || null,
+        startAt,
+        deadline: deadlineWithTime,
         assigneeId: assigneeId || null,
         subTasks,
       }),
@@ -121,8 +137,40 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
       </div>
 
       <div>
+        <label className={labelClass}>開始時間</label>
+        <div className="flex gap-2 items-center">
+          <input
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            className={`${inputClass} flex-1`}
+            placeholder="日付（期限と同じ日）"
+          />
+          <input
+            type="time"
+            value={startAtTime}
+            onChange={(e) => setStartAtTime(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-32"
+          />
+        </div>
+      </div>
+
+      <div>
         <label className={labelClass}>期限</label>
-        <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={inputClass} />
+        <div className="flex gap-2 items-center">
+          <input
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            className={`${inputClass} flex-1`}
+          />
+          <input
+            type="time"
+            value={deadlineTime}
+            onChange={(e) => setDeadlineTime(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-32"
+          />
+        </div>
       </div>
 
       {isAdmin && (

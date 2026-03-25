@@ -26,6 +26,7 @@ model Task {
   description String?
   priority    Priority   @default(MEDIUM)
   status      TaskStatus @default(TODO)
+  startAt     DateTime?
   deadline    DateTime?
   progress    Int        @default(0)
 

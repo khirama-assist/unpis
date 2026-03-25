@@ -6,13 +6,13 @@ import Header from "@/components/layout/Header";
 import TaskForm from "@/components/tasks/TaskForm";
 
 interface NewTaskPageProps {
-  searchParams: Promise<{ deadline?: string }>;
+  searchParams: Promise<{ deadline?: string; startAtTime?: string; deadlineTime?: string }>;
 }
 
 export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
   const session = await getServerSession(authOptions);
   const admin = isAdmin(session);
-  const { deadline } = await searchParams;
+  const { deadline, startAtTime, deadlineTime } = await searchParams;
 
   const members = admin
     ? await prisma.user.findMany({
@@ -31,6 +31,8 @@ export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
             isAdmin={admin}
             currentUserId={session?.user?.id ?? ""}
             defaultDeadline={deadline ?? ""}
+            defaultStartAt={startAtTime ?? ""}
+            defaultDeadlineTime={deadlineTime ?? ""}
           />
         </div>
       </div>
