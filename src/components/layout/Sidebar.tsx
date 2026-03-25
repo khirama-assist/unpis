@@ -36,6 +36,26 @@ const navItems = [
     adminOnly: false,
   },
   {
+    href: "/my-tasks",
+    label: "自分のタスク",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+    adminOnly: false,
+  },
+  {
+    href: "/schedule",
+    label: "スケジュール",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18M3 6h18M3 18h18" />
+      </svg>
+    ),
+    adminOnly: false,
+  },
+  {
     href: "/members",
     label: "メンバー管理",
     icon: (
