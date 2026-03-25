@@ -36,6 +36,7 @@ export default async function EditTaskPage({
 
   const taskForClient = {
     ...task,
+    startAt: task.startAt ? task.startAt.toISOString() : null,
     deadline: task.deadline?.toISOString() ?? null,
     createdAt: task.createdAt.toISOString(),
     updatedAt: task.updatedAt.toISOString(),
@@ -50,7 +51,7 @@ export default async function EditTaskPage({
   return (
     <div className="flex flex-col h-full">
       <Header title="タスク編集" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-xl mx-auto bg-white rounded-xl border border-gray-200 p-6">
           <TaskForm
             task={taskForClient}

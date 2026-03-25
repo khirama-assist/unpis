@@ -25,7 +25,7 @@ export default async function MembersPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="メンバー管理" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <MembersClient
           initialMembers={members.map((m) => ({ ...m, createdAt: m.createdAt.toISOString() }))}
           currentUserId={session?.user?.id ?? ""}

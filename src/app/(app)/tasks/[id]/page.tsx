@@ -49,7 +49,7 @@ export default async function TaskDetailPage({
   return (
     <div className="flex flex-col h-full">
       <Header title="タスク詳細" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
             <Link href="/tasks" className="hover:text-indigo-600 transition-colors">
@@ -59,7 +59,7 @@ export default async function TaskDetailPage({
             <span className="text-gray-700 truncate">{task.title}</span>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 mb-4">
             <div className="flex items-start justify-between gap-4 mb-4">
               <h2 className="text-xl font-bold text-gray-800 flex-1">{task.title}</h2>
               <TaskDetailActions taskId={task.id} canEdit={canEdit} />

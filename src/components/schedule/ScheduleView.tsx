@@ -130,7 +130,7 @@ export default function ScheduleView({ members, tasks, isAdmin: _isAdmin, curren
   return (
     <div className="space-y-4">
       {/* ナビゲーション */}
-      <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-5 py-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-white rounded-xl border border-gray-200 px-4 py-3 md:px-5 md:py-4 shadow-sm">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrev}
@@ -141,7 +141,7 @@ export default function ScheduleView({ members, tasks, isAdmin: _isAdmin, curren
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="text-lg font-bold text-gray-800 w-52 text-center">{headerText}</h2>
+          <h2 className="text-base md:text-lg font-bold text-gray-800 min-w-[130px] md:w-52 text-center">{headerText}</h2>
           <button
             onClick={handleNext}
             className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"

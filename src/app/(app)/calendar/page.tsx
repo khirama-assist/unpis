@@ -66,7 +66,7 @@ export default async function CalendarPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="カレンダー" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <p className="text-sm text-gray-500 mb-5">
           期限が設定されたタスク・ステップをカレンダーで確認できます。
           {!admin && "（自分が担当するタスクのみ表示）"}

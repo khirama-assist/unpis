@@ -11,7 +11,7 @@ export default async function TasksPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="タスク一覧" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <TasksClient isAdmin={admin} />
       </div>
     </div>

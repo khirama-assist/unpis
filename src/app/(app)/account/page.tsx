@@ -19,7 +19,7 @@ export default async function AccountPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="アカウント設定" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <AccountForm
             initialName={user.name}

@@ -10,7 +10,7 @@ export default async function MyTasksPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="自分のタスク" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <MyTasksClient />
       </div>
     </div>

@@ -109,9 +109,9 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="ダッシュボード" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         {/* あいさつバナー */}
-        <div className="flex items-center justify-between bg-white border border-emerald-100 rounded-2xl px-6 py-4 mb-6 shadow-sm overflow-hidden relative">
+        <div className="flex items-center justify-between bg-white border border-emerald-100 rounded-2xl px-4 md:px-6 py-4 mb-6 shadow-sm overflow-hidden relative">
           <div>
             <p className="text-gray-500 text-sm">おかえりなさい 👋</p>
             <p className="text-xl font-bold text-gray-800 mt-0.5">

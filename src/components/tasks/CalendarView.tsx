@@ -206,6 +206,10 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
       {/* ナビゲーション */}
       {renderNavigation()}
 
+      {/* 週ビューグリッド（モバイルは横スクロール） */}
+      <div className="overflow-x-auto">
+      <div style={{ minWidth: "560px" }}>
+
       {/* 曜日ヘッダー */}
       <div className="grid grid-cols-7 border-b border-gray-100">
         {weekDates.map((date, i) => {
@@ -283,6 +287,9 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
           );
         })}
       </div>
+
+      </div>{/* end minWidth div */}
+      </div>{/* end overflow-x-auto */}
 
       {/* 凡例 */}
       {renderLegend()}
@@ -477,7 +484,7 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
 
   // ===== 月ビュー =====
   return (
-    <div className="flex gap-5 items-start">
+    <div className="flex flex-col md:flex-row gap-5 items-start">
       {/* ===== カレンダー本体 ===== */}
       <div className="flex-1 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm min-w-0">
 
@@ -497,7 +504,7 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
         <div className="grid grid-cols-7">
           {calendarCells.map((date, idx) => {
             if (!date) {
-              return <div key={`empty-${idx}`} className="h-32 bg-gray-50 border-r border-b border-gray-100 last:border-r-0" />;
+              return <div key={`empty-${idx}`} className="h-20 md:h-32 bg-gray-50 border-r border-b border-gray-100 last:border-r-0" />;
             }
 
             const key = getDateKey(date);
@@ -519,7 +526,7 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
               <div
                 key={key}
                 onClick={() => handleDayClick(date)}
-                className={`h-32 border-r border-b border-gray-100 last:border-r-0 p-1.5 cursor-pointer transition-colors select-none ${
+                className={`h-20 md:h-32 border-r border-b border-gray-100 last:border-r-0 p-1 md:p-1.5 cursor-pointer transition-colors select-none ${
                   isSelected
                     ? "bg-emerald-50 ring-2 ring-inset ring-emerald-400"
                     : isToday
@@ -590,7 +597,7 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
 
       {/* ===== 右パネル：選択日の詳細（月ビューのみ） ===== */}
       {selectedDay && (
-        <div className="w-76 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-shrink-0" style={{ width: "300px" }}>
+        <div className="w-full md:w-auto md:flex-shrink-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" style={{ minWidth: 0 }}><div className="md:w-[300px]">
 
           {/* パネルヘッダー */}
           <div className="px-4 py-3 border-b border-gray-100 bg-emerald-50">
@@ -763,6 +770,7 @@ export default function CalendarView({ tasks, subTasks }: CalendarViewProps) {
               <span>ステップ {selectedSubTasks.filter((s) => s.isCompleted).length}/{selectedSubTasks.length} 完了</span>
             </div>
           )}
+        </div>{/* end md:w-[300px] */}
         </div>
       )}
     </div>

@@ -40,7 +40,7 @@ export default async function SchedulePage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="スケジュール" />
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         <ScheduleView members={members} tasks={serialized} isAdmin={admin} currentUserId={userId!} />
       </div>
     </div>

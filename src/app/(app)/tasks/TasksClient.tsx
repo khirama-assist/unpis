@@ -45,13 +45,13 @@ export default function TasksClient({ isAdmin }: TasksClientProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-700">
+      <div className="flex items-center justify-between mb-6 gap-3">
+        <h2 className="text-lg font-semibold text-gray-700 min-w-0">
           {loading ? "読み込み中..." : `${tasks.length}件のタスク`}
         </h2>
         <Link
           href="/tasks/new"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1.5"
+          className="bg-indigo-600 text-white px-3 py-2 md:px-4 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1.5 shrink-0"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
