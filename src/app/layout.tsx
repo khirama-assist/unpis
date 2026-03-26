@@ -11,6 +11,11 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "UNPIS",
   description: "チームのタスクを一元管理するアプリ",
+  icons: {
+    icon: "/unpis-logo.png",
+    shortcut: "/unpis-logo.png",
+    apple: "/unpis-logo.png",
+  },
 };
 
 export default function RootLayout({

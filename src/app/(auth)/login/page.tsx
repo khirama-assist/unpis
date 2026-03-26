@@ -43,7 +43,15 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-24 h-24 bg-emerald-50 rounded-2xl mb-4 shadow-lg shadow-emerald-100 border border-emerald-100 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/unpis-logo.png" alt="UNPIS" width={96} height={96} className="w-full h-full object-contain p-1" />
+            <img
+              src="/unpis-logo.png"
+              alt="UNPIS"
+              width={96}
+              height={96}
+              className="w-full h-full object-contain p-1"
+              loading="eager"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 tracking-wide">UNPIS</h1>
           <p className="text-gray-500 text-sm mt-1">チームのタスクを一元管理</p>
