@@ -13,6 +13,7 @@ export default function MyTasksClient() {
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [loading, setLoading] = useState(true);
+  const [doneExpanded, setDoneExpanded] = useState(false);
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -31,11 +32,26 @@ export default function MyTasksClient() {
       .catch(() => setLoading(false));
   }, [session?.user?.id, status, priority]);
 
+  const activeTasks = tasks.filter((t) => t.status !== "DONE");
+  const doneTasks = tasks.filter((t) => t.status === "DONE");
+
+  const skeletons = (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="bg-white border border-gray-200 rounded-xl p-4 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-3 bg-gray-100 rounded w-1/2 mb-4" />
+          <div className="h-2 bg-gray-200 rounded w-full" />
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-700">
-          {loading ? "読み込み中..." : `${tasks.length}件のタスク`}
+          {loading ? "読み込み中..." : `${activeTasks.length}件のタスク`}
         </h2>
         <Link
           href="/tasks/new"
@@ -62,16 +78,8 @@ export default function MyTasksClient() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl p-4 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-3 bg-gray-100 rounded w-1/2 mb-4" />
-              <div className="h-2 bg-gray-200 rounded w-full" />
-            </div>
-          ))}
-        </div>
-      ) : tasks.length === 0 ? (
+        skeletons
+      ) : activeTasks.length === 0 && doneTasks.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-24 h-24 mx-auto mb-4 overflow-hidden select-none">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,11 +94,54 @@ export default function MyTasksClient() {
           <p className="text-gray-400 text-sm mt-1">新しいタスクを追加してみましょう！</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </div>
+        <>
+          {/* 進行中タスク */}
+          {activeTasks.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activeTasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 text-gray-400 text-sm">
+              進行中のタスクはありません
+            </div>
+          )}
+
+          {/* 完了済みセクション */}
+          {doneTasks.length > 0 && (
+            <div className="mt-8">
+              <button
+                onClick={() => setDoneExpanded((prev) => !prev)}
+                className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors mb-4 w-full"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${doneExpanded ? "rotate-90" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <span className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  完了済み {doneTasks.length}件
+                </span>
+                <div className="flex-1 h-px bg-gray-200 ml-2" />
+              </button>
+
+              {doneExpanded && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 opacity-75">
+                  {doneTasks.map((task) => (
+                    <TaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
