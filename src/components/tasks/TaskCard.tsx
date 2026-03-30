@@ -68,14 +68,14 @@ export default function TaskCard({ task }: TaskCardProps) {
   return (
     <div
       onClick={() => router.push(`/tasks/${task.id}`)}
-      className={`bg-white border rounded-xl p-4 hover:shadow-md transition-all cursor-pointer ${
+      className={`bg-white border rounded-xl p-3 hover:shadow-md transition-all cursor-pointer ${
         status === "DONE"
           ? "border-emerald-200 bg-emerald-50/30"
           : "border-gray-200 hover:border-emerald-200"
       }`}
     >
       {/* タイトル行 */}
-      <div className="flex items-start justify-between gap-2 mb-3">
+      <div className="flex items-start justify-between gap-2 mb-2">
         <h3
           className={`font-semibold text-sm leading-snug line-clamp-2 flex-1 ${
             status === "DONE" ? "text-gray-400 line-through" : "text-gray-800"
@@ -86,12 +86,12 @@ export default function TaskCard({ task }: TaskCardProps) {
         <span
           className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${PRIORITY_COLORS[task.priority]}`}
         >
-          優先度：{PRIORITY_LABELS[task.priority]}
+          {PRIORITY_LABELS[task.priority]}
         </span>
       </div>
 
       {/* ステータス・期限バッジ */}
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <div className="flex flex-wrap gap-1.5 mb-2">
         <span
           className={`text-xs px-2 py-0.5 rounded-full font-medium ${TASK_STATUS_COLORS[status]}`}
         >
@@ -106,14 +106,14 @@ export default function TaskCard({ task }: TaskCardProps) {
       {/* サブタスクチェックリスト */}
       {subTasks.length > 0 && (
         <div
-          className="mb-3"
+          className="mb-2"
           onClick={(e) => e.stopPropagation()}
         >
           <ProgressBar value={progress} />
           <p className="text-xs text-gray-400 mt-1 mb-2">
             {subTasks.filter((s) => s.isCompleted).length} / {subTasks.length} ステップ完了
           </p>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {visibleSubTasks.map((st) => (
               <div key={st.id} className="flex items-center gap-2">
                 <button
@@ -165,7 +165,7 @@ export default function TaskCard({ task }: TaskCardProps) {
           onClick={handleComplete}
           disabled={completing}
           title={status === "DONE" ? "完了を取り消す" : "完了にする"}
-          className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
             status === "DONE"
               ? "bg-emerald-500 border-emerald-500 hover:bg-emerald-600"
               : "border-gray-300 hover:border-emerald-400 hover:bg-emerald-50"
@@ -174,11 +174,11 @@ export default function TaskCard({ task }: TaskCardProps) {
           {completing ? (
             <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : status === "DONE" ? (
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           ) : (
-            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           )}

@@ -22,6 +22,18 @@ export default function TasksClient({ isAdmin }: TasksClientProps) {
   const [loading, setLoading] = useState(true);
   const [doneExpanded, setDoneExpanded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | "ALL">("ALL");
+  const [expandedCategories, setExpandedCategories] = useState<Set<Category>>(
+    new Set(["INTERNAL", "CLIENT", "ADMIN_WORK"] as Category[])
+  );
+
+  const toggleCategory = (cat: Category) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
 
   useEffect(() => {
     fetch("/api/members")
@@ -144,20 +156,34 @@ export default function TasksClient({ isAdmin }: TasksClientProps) {
             CATEGORIES.map((cat) => {
               const group = activeTasks.filter((t) => t.category === cat);
               if (group.length === 0) return null;
+              const isExpanded = expandedCategories.has(cat);
               return (
-                <div key={cat} className="mb-8">
-                  <div className="flex items-center gap-2 mb-3">
+                <div key={cat} className="mb-6">
+                  <button
+                    onClick={() => toggleCategory(cat)}
+                    className="flex items-center gap-2 mb-3 w-full text-left"
+                  >
+                    <svg
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0 ${isExpanded ? "rotate-90" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                     <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${CATEGORY_COLORS[cat]}`}>
                       {CATEGORY_LABELS[cat]}
                     </span>
                     <span className="text-sm text-gray-400">{group.length}件</span>
                     <div className="flex-1 h-px bg-gray-100" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {group.map((task) => (
-                      <TaskCard key={task.id} task={task} />
-                    ))}
-                  </div>
+                  </button>
+                  {isExpanded && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {group.map((task) => (
+                        <TaskCard key={task.id} task={task} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })

@@ -9,6 +9,7 @@ interface SubTaskInput {
   title: string;
   isCompleted: boolean;
   deadline: string; // "YYYY-MM-DD" or ""
+  deadlineTime: string; // "HH:MM" or ""
 }
 
 interface TaskFormProps {
@@ -17,11 +18,10 @@ interface TaskFormProps {
   isAdmin: boolean;
   currentUserId: string;
   defaultDeadline?: string; // カレンダーから渡される "YYYY-MM-DD"
-  defaultStartAt?: string;  // 開始時間 "HH:MM"
   defaultDeadlineTime?: string; // 終了時間 "HH:MM"
 }
 
-export default function TaskForm({ task, members, isAdmin, currentUserId, defaultDeadline = "", defaultStartAt = "", defaultDeadlineTime = "" }: TaskFormProps) {
+export default function TaskForm({ task, members, isAdmin, currentUserId, defaultDeadline = "", defaultDeadlineTime = "" }: TaskFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
@@ -29,9 +29,6 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
   const [status, setStatus] = useState<TaskStatus>(task?.status ?? "TODO");
   const [deadline, setDeadline] = useState(
     task?.deadline ? new Date(task.deadline).toISOString().split("T")[0] : defaultDeadline
-  );
-  const [startAtTime, setStartAtTime] = useState(
-    task?.startAt ? new Date(task.startAt).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultStartAt
   );
   const [deadlineTime, setDeadlineTime] = useState(
     task?.deadline && task.deadline.includes("T") ? new Date(task.deadline).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultDeadlineTime
@@ -43,18 +40,21 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
       title: s.title,
       isCompleted: s.isCompleted,
       deadline: s.deadline ? new Date(s.deadline).toISOString().split("T")[0] : "",
+      deadlineTime: "",
     })) ?? []
   );
   const [newSubTask, setNewSubTask] = useState("");
   const [newSubTaskDeadline, setNewSubTaskDeadline] = useState("");
+  const [newSubTaskDeadlineTime, setNewSubTaskDeadlineTime] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const addSubTask = () => {
     if (!newSubTask.trim()) return;
-    setSubTasks([...subTasks, { title: newSubTask.trim(), isCompleted: false, deadline: newSubTaskDeadline }]);
+    setSubTasks([...subTasks, { title: newSubTask.trim(), isCompleted: false, deadline: newSubTaskDeadline, deadlineTime: newSubTaskDeadlineTime }]);
     setNewSubTask("");
     setNewSubTaskDeadline("");
+    setNewSubTaskDeadlineTime("");
   };
 
   const removeSubTask = (idx: number) => {
@@ -70,12 +70,17 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
     const url = task ? `/api/tasks/${task.id}` : "/api/tasks";
     const method = task ? "PUT" : "POST";
 
-    const startAt = deadline && startAtTime
-      ? `${deadline}T${startAtTime}:00`
-      : null;
     const deadlineWithTime = deadline && deadlineTime
       ? `${deadline}T${deadlineTime}:00`
       : deadline || null;
+
+    const processedSubTasks = subTasks.map((st) => ({
+      title: st.title,
+      isCompleted: st.isCompleted,
+      deadline: st.deadline && st.deadlineTime
+        ? `${st.deadline}T${st.deadlineTime}:00`
+        : st.deadline || null,
+    }));
 
     const res = await fetch(url, {
       method,
@@ -85,10 +90,9 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
         description,
         priority,
         status,
-        startAt,
         deadline: deadlineWithTime,
         assigneeId: assigneeId || null,
-        subTasks,
+        subTasks: processedSubTasks,
         category,
       }),
     });
@@ -145,25 +149,6 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
             <option value="REVIEW">レビュー中</option>
             <option value="DONE">完了</option>
           </select>
-        </div>
-      </div>
-
-      <div>
-        <label className={labelClass}>開始時間</label>
-        <div className="flex gap-2 items-center">
-          <input
-            type="date"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
-            className={`${inputClass} flex-1`}
-            placeholder="日付（期限と同じ日）"
-          />
-          <input
-            type="time"
-            value={startAtTime}
-            onChange={(e) => setStartAtTime(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-32"
-          />
         </div>
       </div>
 
@@ -232,12 +217,22 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
                   }}
                   className="text-xs px-2 py-1 border border-gray-200 rounded-md text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-400 bg-white"
                 />
+                <input
+                  type="time"
+                  value={st.deadlineTime}
+                  onChange={(e) => {
+                    const updated = [...subTasks];
+                    updated[idx] = { ...updated[idx], deadlineTime: e.target.value };
+                    setSubTasks(updated);
+                  }}
+                  className="text-xs px-2 py-1 border border-gray-200 rounded-md text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-400 bg-white w-28"
+                />
                 {st.deadline && (
                   <button
                     type="button"
                     onClick={() => {
                       const updated = [...subTasks];
-                      updated[idx] = { ...updated[idx], deadline: "" };
+                      updated[idx] = { ...updated[idx], deadline: "", deadlineTime: "" };
                       setSubTasks(updated);
                     }}
                     className="text-xs text-gray-400 hover:text-red-400 transition-colors"
@@ -268,7 +263,7 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
               追加
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -277,6 +272,12 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
               value={newSubTaskDeadline}
               onChange={(e) => setNewSubTaskDeadline(e.target.value)}
               className="text-xs px-2 py-1 border border-gray-200 rounded-md text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-400 bg-white"
+            />
+            <input
+              type="time"
+              value={newSubTaskDeadlineTime}
+              onChange={(e) => setNewSubTaskDeadlineTime(e.target.value)}
+              className="text-xs px-2 py-1 border border-gray-200 rounded-md text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-400 bg-white w-28"
             />
             <span className="text-xs text-gray-400">このステップの期限（任意）</span>
           </div>

@@ -22,6 +22,7 @@ export default function SubTaskList({
   // 期限編集中のサブタスクID
   const [editingDeadlineId, setEditingDeadlineId] = useState<string | null>(null);
   const [deadlineInput, setDeadlineInput] = useState("");
+  const [deadlineTimeInput, setDeadlineTimeInput] = useState("");
 
   // チェックボックス ON/OFF（全員が使用可能）
   const toggle = async (subTask: SubTaskData) => {
@@ -54,27 +55,32 @@ export default function SubTaskList({
         ? new Date(subTask.deadline).toISOString().split("T")[0]
         : ""
     );
+    setDeadlineTimeInput("");
   };
 
   // 期限を保存
   const saveDeadline = async (subTask: SubTaskData) => {
     setLoading(subTask.id);
+    const combinedDeadline = deadlineInput && deadlineTimeInput
+      ? `${deadlineInput}T${deadlineTimeInput}:00`
+      : deadlineInput || null;
     const res = await fetch(`/api/subtasks/${subTask.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deadline: deadlineInput || null }),
+      body: JSON.stringify({ deadline: combinedDeadline }),
     });
 
     if (res.ok) {
       setSubTasks((prev) =>
         prev.map((s) =>
           s.id === subTask.id
-            ? { ...s, deadline: deadlineInput ? new Date(deadlineInput).toISOString() : null }
+            ? { ...s, deadline: combinedDeadline ? new Date(combinedDeadline).toISOString() : null }
             : s
         )
       );
     }
     setEditingDeadlineId(null);
+    setDeadlineTimeInput("");
     setLoading(null);
   };
 
@@ -82,6 +88,7 @@ export default function SubTaskList({
   const cancelEditDeadline = () => {
     setEditingDeadlineId(null);
     setDeadlineInput("");
+    setDeadlineTimeInput("");
   };
 
   if (subTasks.length === 0) {
@@ -159,13 +166,19 @@ export default function SubTaskList({
                 <div className="px-3 pb-2.5 pl-11">
                   {isEditingThis ? (
                     /* 期限編集モード */
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <input
                         type="date"
                         value={deadlineInput}
                         onChange={(e) => setDeadlineInput(e.target.value)}
                         autoFocus
                         className="text-xs px-2 py-1 border border-emerald-300 rounded-md text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                      />
+                      <input
+                        type="time"
+                        value={deadlineTimeInput}
+                        onChange={(e) => setDeadlineTimeInput(e.target.value)}
+                        className="text-xs px-2 py-1 border border-emerald-300 rounded-md text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-400 w-28"
                       />
                       <button
                         onClick={() => saveDeadline(st)}

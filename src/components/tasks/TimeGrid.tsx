@@ -127,7 +127,7 @@ export default function TimeGrid({ date, tasks, showAddButton = true }: TimeGrid
     const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
     const startTime = slotToLabel(start);
     const endTime = slotToLabel(end);
-    router.push(`/tasks/new?deadline=${dateStr}&startAtTime=${startTime}&deadlineTime=${endTime}`);
+    router.push(`/tasks/new?deadline=${dateStr}&deadlineTime=${endTime}`);
 
     setDragStart(null);
     setDragEnd(null);
