@@ -50,11 +50,7 @@ export default function SubTaskList({
   const startEditDeadline = (subTask: SubTaskData) => {
     if (!canEdit) return;
     setEditingDeadlineId(subTask.id);
-    setDeadlineInput(
-      subTask.deadline
-        ? new Date(subTask.deadline).toISOString().split("T")[0]
-        : ""
-    );
+    setDeadlineInput(subTask.deadline ? subTask.deadline.substring(0, 10) : "");
     setDeadlineTimeInput("");
   };
 

@@ -28,18 +28,20 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
   const [priority, setPriority] = useState<Priority>(task?.priority ?? "MEDIUM");
   const [status, setStatus] = useState<TaskStatus>(task?.status ?? "TODO");
   const [deadline, setDeadline] = useState(
-    task?.deadline ? new Date(task.deadline).toISOString().split("T")[0] : defaultDeadline
+    task?.deadline ? task.deadline.substring(0, 10) : defaultDeadline
   );
-  const [deadlineTime, setDeadlineTime] = useState(
-    task?.deadline && task.deadline.includes("T") ? new Date(task.deadline).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultDeadlineTime
-  );
+  const [deadlineTime, setDeadlineTime] = useState(() => {
+    if (!task?.deadline) return defaultDeadlineTime;
+    const t = task.deadline.substring(11, 16); // "HH:MM"
+    return t && t !== "00:00" ? t : defaultDeadlineTime;
+  });
   const [category, setCategory] = useState<Category>(task?.category ?? "INTERNAL");
   const [assigneeId, setAssigneeId] = useState(task?.assigneeId ?? currentUserId);
   const [subTasks, setSubTasks] = useState<SubTaskInput[]>(
     task?.subTasks.map((s) => ({
       title: s.title,
       isCompleted: s.isCompleted,
-      deadline: s.deadline ? new Date(s.deadline).toISOString().split("T")[0] : "",
+      deadline: s.deadline ? s.deadline.substring(0, 10) : "",
       deadlineTime: "",
     })) ?? []
   );
