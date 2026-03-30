@@ -15,10 +15,8 @@ export async function GET(request: NextRequest) {
 
   const where: Record<string, unknown> = {};
 
-  // 管理者は全タスク、メンバーは自分のタスクのみ
-  if (!isAdmin(session)) {
-    where.assigneeId = session.user.id;
-  } else if (assigneeId) {
+  // 全員が全タスクを閲覧可能（assigneeIdフィルターは任意）
+  if (assigneeId) {
     where.assigneeId = assigneeId;
   }
 

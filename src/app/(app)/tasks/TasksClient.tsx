@@ -19,13 +19,11 @@ export default function TasksClient({ isAdmin }: TasksClientProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isAdmin) {
-      fetch("/api/members")
-        .then((r) => r.json())
-        .then(setMembers)
-        .catch(() => {});
-    }
-  }, [isAdmin]);
+    fetch("/api/members")
+      .then((r) => r.json())
+      .then(setMembers)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLoading(true);
