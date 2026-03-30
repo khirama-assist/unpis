@@ -13,15 +13,14 @@ export async function GET(request: NextRequest) {
   const priority = searchParams.get("priority");
   const assigneeId = searchParams.get("assigneeId");
 
+  const category = searchParams.get("category");
   const where: Record<string, unknown> = {};
 
   // 全員が全タスクを閲覧可能（assigneeIdフィルターは任意）
-  if (assigneeId) {
-    where.assigneeId = assigneeId;
-  }
-
+  if (assigneeId) where.assigneeId = assigneeId;
   if (status) where.status = status;
   if (priority) where.priority = priority;
+  if (category) where.category = category;
 
   const tasks = await prisma.task.findMany({
     where,
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
   if (!session) return Response.json({ error: "未認証" }, { status: 401 });
 
   const body = await request.json();
-  const { title, description, priority, status, deadline, startAt, assigneeId, subTasks } = body;
+  const { title, description, priority, status, deadline, startAt, assigneeId, subTasks, category } = body;
 
   if (!title?.trim()) {
     return Response.json({ error: "タイトルは必須です" }, { status: 400 });
@@ -60,6 +59,7 @@ export async function POST(request: NextRequest) {
       startAt: startAt ? new Date(startAt) : null,
       deadline: deadline ? new Date(deadline) : null,
       progress: 0,
+      category: category || "INTERNAL",
       assigneeId: effectiveAssigneeId || null,
       createdById: session.user.id,
       subTasks: subTasks?.length

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/ProgressBar";
 import DeadlineBadge from "@/components/ui/DeadlineBadge";
 import Avatar from "@/components/ui/Avatar";
-import { TASK_STATUS_LABELS, TASK_STATUS_COLORS, PRIORITY_LABELS, PRIORITY_COLORS } from "@/types";
+import { TASK_STATUS_LABELS, TASK_STATUS_COLORS, PRIORITY_LABELS, PRIORITY_COLORS, CATEGORY_LABELS, CATEGORY_COLORS } from "@/types";
 import type { TaskData, TaskStatus, SubTaskData } from "@/types";
 
 interface TaskCardProps {
@@ -96,6 +96,9 @@ export default function TaskCard({ task }: TaskCardProps) {
           className={`text-xs px-2 py-0.5 rounded-full font-medium ${TASK_STATUS_COLORS[status]}`}
         >
           {TASK_STATUS_LABELS[status]}
+        </span>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[task.category]}`}>
+          {CATEGORY_LABELS[task.category]}
         </span>
         <DeadlineBadge deadline={task.deadline} />
       </div>

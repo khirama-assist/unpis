@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { TaskData, MemberData, Priority, TaskStatus } from "@/types";
+import type { TaskData, MemberData, Priority, TaskStatus, Category } from "@/types";
+import { CATEGORY_LABELS } from "@/types";
 
 interface SubTaskInput {
   title: string;
@@ -35,6 +36,7 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
   const [deadlineTime, setDeadlineTime] = useState(
     task?.deadline && task.deadline.includes("T") ? new Date(task.deadline).toLocaleTimeString("ja", { hour: "2-digit", minute: "2-digit", hour12: false }) : defaultDeadlineTime
   );
+  const [category, setCategory] = useState<Category>(task?.category ?? "INTERNAL");
   const [assigneeId, setAssigneeId] = useState(task?.assigneeId ?? currentUserId);
   const [subTasks, setSubTasks] = useState<SubTaskInput[]>(
     task?.subTasks.map((s) => ({
@@ -87,6 +89,7 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
         deadline: deadlineWithTime,
         assigneeId: assigneeId || null,
         subTasks,
+        category,
       }),
     });
 
@@ -113,6 +116,15 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
       <div>
         <label className={labelClass}>説明</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={inputClass} placeholder="詳細な説明（任意）" />
+      </div>
+
+      <div>
+        <label className={labelClass}>カテゴリ</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value as Category)} className={inputClass}>
+          {(Object.entries(CATEGORY_LABELS) as [Category, string][]).map(([k, v]) => (
+            <option key={k} value={k}>{v}</option>
+          ))}
+        </select>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

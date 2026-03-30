@@ -1,4 +1,17 @@
 export type UserRole = "ADMIN" | "MEMBER";
+export type Category = "INTERNAL" | "CLIENT" | "ADMIN_WORK";
+
+export const CATEGORY_LABELS: Record<Category, string> = {
+  INTERNAL:   "社内",
+  CLIENT:     "クライアント提出",
+  ADMIN_WORK: "事務作業",
+};
+
+export const CATEGORY_COLORS: Record<Category, string> = {
+  INTERNAL:   "bg-blue-100 text-blue-700",
+  CLIENT:     "bg-purple-100 text-purple-700",
+  ADMIN_WORK: "bg-orange-100 text-orange-700",
+};
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
 export type Priority = "HIGH" | "MEDIUM" | "LOW";
 
@@ -51,6 +64,7 @@ export interface TaskData {
   deadline: string | null;
   startAt: string | null;
   progress: number;
+  category: Category;
   assigneeId: string | null;
   assignee: { id: string; name: string; email: string } | null;
   createdById: string;

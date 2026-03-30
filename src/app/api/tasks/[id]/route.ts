@@ -37,7 +37,7 @@ export async function PUT(
   if (!task) return Response.json({ error: "タスクが見つかりません" }, { status: 404 });
 
   const body = await request.json();
-  const { title, description, priority, status, deadline, startAt, assigneeId, subTasks } = body;
+  const { title, description, priority, status, deadline, startAt, assigneeId, subTasks, category } = body;
 
   // ステータス変更のみなら全員OK、それ以外は管理者/作成者のみ
   const isStatusOnly = Object.keys(body).length === 1 && status !== undefined;
@@ -55,6 +55,7 @@ export async function PUT(
       ...(startAt !== undefined && { startAt: startAt ? new Date(startAt) : null }),
       ...(deadline !== undefined && { deadline: deadline ? new Date(deadline) : null }),
       ...(assigneeId !== undefined && { assigneeId: assigneeId || null }),
+      ...(category !== undefined && { category }),
     },
     include: {
       assignee: { select: { id: true, name: true, email: true } },
