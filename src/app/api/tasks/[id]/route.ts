@@ -36,12 +36,14 @@ export async function PUT(
   const task = await prisma.task.findUnique({ where: { id } });
   if (!task) return Response.json({ error: "タスクが見つかりません" }, { status: 404 });
 
-  if (!canEditTask(session, task)) {
-    return Response.json({ error: "権限がありません" }, { status: 403 });
-  }
-
   const body = await request.json();
   const { title, description, priority, status, deadline, startAt, assigneeId, subTasks } = body;
+
+  // ステータス変更のみなら全員OK、それ以外は管理者/作成者のみ
+  const isStatusOnly = Object.keys(body).length === 1 && status !== undefined;
+  if (!isStatusOnly && !canEditTask(session, task)) {
+    return Response.json({ error: "権限がありません" }, { status: 403 });
+  }
 
   const updated = await prisma.task.update({
     where: { id },

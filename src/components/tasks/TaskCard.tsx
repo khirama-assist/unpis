@@ -1,50 +1,103 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/ProgressBar";
 import DeadlineBadge from "@/components/ui/DeadlineBadge";
 import Avatar from "@/components/ui/Avatar";
 import { TASK_STATUS_LABELS, TASK_STATUS_COLORS, PRIORITY_LABELS, PRIORITY_COLORS } from "@/types";
-import type { TaskData } from "@/types";
+import type { TaskData, TaskStatus } from "@/types";
 
 interface TaskCardProps {
   task: TaskData;
 }
 
 export default function TaskCard({ task }: TaskCardProps) {
+  const router = useRouter();
+  const [status, setStatus] = useState<TaskStatus>(task.status);
+  const [completing, setCompleting] = useState(false);
+
+  const handleComplete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCompleting(true);
+    const newStatus: TaskStatus = status === "DONE" ? "TODO" : "DONE";
+    const res = await fetch(`/api/tasks/${task.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    if (res.ok) setStatus(newStatus);
+    setCompleting(false);
+  };
+
   return (
-    <Link href={`/tasks/${task.id}`} className="block">
-      <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-emerald-200 transition-all">
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <h3 className="font-semibold text-gray-800 text-sm leading-snug line-clamp-2 flex-1">
-            {task.title}
-          </h3>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${PRIORITY_COLORS[task.priority]}`}>
-            優先度：{PRIORITY_LABELS[task.priority]}
-          </span>
+    <div
+      onClick={() => router.push(`/tasks/${task.id}`)}
+      className={`bg-white border rounded-xl p-4 hover:shadow-md transition-all cursor-pointer ${
+        status === "DONE" ? "border-emerald-200 bg-emerald-50/30" : "border-gray-200 hover:border-emerald-200"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <h3 className={`font-semibold text-sm leading-snug line-clamp-2 flex-1 ${
+          status === "DONE" ? "text-gray-400 line-through" : "text-gray-800"
+        }`}>
+          {task.title}
+        </h3>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${PRIORITY_COLORS[task.priority]}`}>
+          優先度：{PRIORITY_LABELS[task.priority]}
+        </span>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TASK_STATUS_COLORS[status]}`}>
+          {TASK_STATUS_LABELS[status]}
+        </span>
+        <DeadlineBadge deadline={task.deadline} />
+      </div>
+
+      {task.subTasks.length > 0 && (
+        <div className="mb-3">
+          <ProgressBar value={task.progress} />
+          <p className="text-xs text-gray-400 mt-1">
+            {task.subTasks.filter((s) => s.isCompleted).length} / {task.subTasks.length} ステップ完了
+          </p>
         </div>
+      )}
 
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TASK_STATUS_COLORS[task.status]}`}>
-            {TASK_STATUS_LABELS[task.status]}
-          </span>
-          <DeadlineBadge deadline={task.deadline} />
-        </div>
-
-        {task.subTasks.length > 0 && (
-          <div className="mb-3">
-            <ProgressBar value={task.progress} />
-            <p className="text-xs text-gray-400 mt-1">
-              {task.subTasks.filter((s) => s.isCompleted).length} / {task.subTasks.length} ステップ完了
-            </p>
-          </div>
-        )}
-
-        {task.assignee && (
-          <div className="flex items-center gap-1.5 mt-2">
+      <div className="flex items-center justify-between mt-2">
+        {task.assignee ? (
+          <div className="flex items-center gap-1.5">
             <Avatar name={task.assignee.name} size="sm" />
             <span className="text-xs text-gray-500">{task.assignee.name}</span>
           </div>
+        ) : (
+          <span />
         )}
+
+        {/* ワンクリック完了ボタン */}
+        <button
+          onClick={handleComplete}
+          disabled={completing}
+          title={status === "DONE" ? "完了を取り消す" : "完了にする"}
+          className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+            status === "DONE"
+              ? "bg-emerald-500 border-emerald-500 hover:bg-emerald-600"
+              : "border-gray-300 hover:border-emerald-400 hover:bg-emerald-50"
+          } ${completing ? "opacity-50" : ""}`}
+        >
+          {completing ? (
+            <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : status === "DONE" ? (
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </button>
       </div>
-    </Link>
+    </div>
   );
 }

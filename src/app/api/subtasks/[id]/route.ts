@@ -25,11 +25,15 @@ export async function PUT(
   if (!subTask) return Response.json({ error: "サブタスクが見つかりません" }, { status: 404 });
 
   const task = await prisma.task.findUnique({ where: { id: subTask.taskId } });
-  if (!task || !canEditTask(session, task)) {
-    return Response.json({ error: "権限がありません" }, { status: 403 });
-  }
+  if (!task) return Response.json({ error: "タスクが見つかりません" }, { status: 404 });
 
   const body = await request.json();
+
+  // isCompleted変更のみなら全員OK、それ以外は管理者/作成者のみ
+  const isCompleteOnly = Object.keys(body).length === 1 && body.isCompleted !== undefined;
+  if (!isCompleteOnly && !canEditTask(session, task)) {
+    return Response.json({ error: "権限がありません" }, { status: 403 });
+  }
   const updated = await prisma.subTask.update({
     where: { id },
     data: {

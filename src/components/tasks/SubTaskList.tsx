@@ -23,9 +23,8 @@ export default function SubTaskList({
   const [editingDeadlineId, setEditingDeadlineId] = useState<string | null>(null);
   const [deadlineInput, setDeadlineInput] = useState("");
 
-  // チェックボックス ON/OFF
+  // チェックボックス ON/OFF（全員が使用可能）
   const toggle = async (subTask: SubTaskData) => {
-    if (!canEdit) return;
     setLoading(subTask.id);
 
     const res = await fetch(`/api/subtasks/${subTask.id}`, {
@@ -119,12 +118,12 @@ export default function SubTaskList({
                 <div className="flex items-center gap-3 p-3">
                   <button
                     onClick={() => toggle(st)}
-                    disabled={!canEdit || loading === st.id}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                    disabled={loading === st.id}
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
                       st.isCompleted
                         ? "bg-green-500 border-green-500"
                         : "border-gray-300 hover:border-emerald-400"
-                    } ${!canEdit ? "cursor-default" : "cursor-pointer"}`}
+                    }`}
                   >
                     {st.isCompleted && (
                       <svg
