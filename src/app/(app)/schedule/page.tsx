@@ -13,13 +13,13 @@ export default async function SchedulePage() {
   const userId = session?.user?.id;
 
   const members = await prisma.user.findMany({
-    where: admin ? {} : { id: userId },
+    where: {},
     select: { id: true, name: true, role: true },
     orderBy: { name: "asc" },
   });
 
   const tasks = await prisma.task.findMany({
-    where: admin ? {} : { assigneeId: userId },
+    where: {},
     select: {
       id: true, title: true, priority: true, status: true,
       deadline: true, progress: true, assigneeId: true,

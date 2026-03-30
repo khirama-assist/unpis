@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { isAdmin } from "@/lib/permissions";
 import Header from "@/components/layout/Header";
 import CalendarView from "@/components/tasks/CalendarView";
 
@@ -10,16 +9,9 @@ export default async function CalendarPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/login");
 
-  const admin = isAdmin(session);
-  const userId = session?.user?.id;
-
   // タスク（期限あり）
-  const taskWhere = admin
-    ? {}
-    : { assigneeId: userId };
-
   const tasks = await prisma.task.findMany({
-    where: taskWhere,
+    where: {},
     select: {
       id: true,
       title: true,
@@ -34,12 +26,8 @@ export default async function CalendarPage() {
   });
 
   // サブタスク（期限あり）
-  const subTaskWhere = admin
-    ? { deadline: { not: null } }
-    : { deadline: { not: null }, task: { assigneeId: userId } };
-
   const subTasks = await prisma.subTask.findMany({
-    where: subTaskWhere,
+    where: { deadline: { not: null } },
     select: {
       id: true,
       title: true,
@@ -69,7 +57,6 @@ export default async function CalendarPage() {
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <p className="text-sm text-gray-500 mb-5">
           期限が設定されたタスク・ステップをカレンダーで確認できます。
-          {!admin && "（自分が担当するタスクのみ表示）"}
         </p>
         <CalendarView tasks={serializedTasks} subTasks={serializedSubTasks} />
       </div>

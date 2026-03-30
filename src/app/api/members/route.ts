@@ -8,7 +8,6 @@ import bcrypt from "bcryptjs";
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return Response.json({ error: "未認証" }, { status: 401 });
-  if (!isAdmin(session)) return Response.json({ error: "権限がありません" }, { status: 403 });
 
   const members = await prisma.user.findMany({
     select: {

@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   const admin = isAdmin(session);
 
-  const where = admin ? {} : { assigneeId: session?.user?.id };
+  const where = {};
 
   const [tasks, overdueCount, soonCount] = await Promise.all([
     prisma.task.findMany({
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
     where: {
       isCompleted: false,
       deadline: { lt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) },
-      task: admin ? {} : { assigneeId: session?.user?.id },
+      task: {},
     },
     include: {
       task: {
