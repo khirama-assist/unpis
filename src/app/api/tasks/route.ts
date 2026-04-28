@@ -46,9 +46,7 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "タイトルは必須です" }, { status: 400 });
   }
 
-  // メンバーは自分にのみ割り当て可能
-  const effectiveAssigneeId =
-    isAdmin(session) ? assigneeId : session.user.id;
+  const effectiveAssigneeId = assigneeId || session.user.id;
 
   const task = await prisma.task.create({
     data: {

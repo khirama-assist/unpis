@@ -27,12 +27,10 @@ export default async function EditTaskPage({
   if (!canEditTask(session, task)) redirect("/tasks");
 
   const admin = isAdmin(session);
-  const members = admin
-    ? await prisma.user.findMany({
-        select: { id: true, name: true, email: true, role: true, createdAt: true },
-        orderBy: { name: "asc" },
-      })
-    : [];
+  const members = await prisma.user.findMany({
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+    orderBy: { name: "asc" },
+  });
 
   const taskForClient = {
     ...task,

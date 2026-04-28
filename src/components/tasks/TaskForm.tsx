@@ -172,17 +172,15 @@ export default function TaskForm({ task, members, isAdmin, currentUserId, defaul
         </div>
       </div>
 
-      {isAdmin && (
-        <div>
-          <label className={labelClass}>担当者</label>
-          <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)} className={inputClass}>
-            <option value="">未割当</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
+      <div>
+        <label className={labelClass}>担当者</label>
+        <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)} className={inputClass}>
+          <option value="">未割当</option>
+          {members.map((m) => (
+            <option key={m.id} value={m.id}>{m.name}</option>
+          ))}
+        </select>
+      </div>
 
       <div>
         <label className={labelClass}>サブタスク（ステップ）</label>
