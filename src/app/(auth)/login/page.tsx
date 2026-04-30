@@ -53,7 +53,7 @@ export default function LoginPage() {
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 tracking-wide">UNPIS</h1>
+          <h1 className="text-3xl font-bold text-gray-800 tracking-wide">{process.env.NEXT_PUBLIC_APP_NAME ?? "UNPIS"}</h1>
           <p className="text-gray-500 text-sm mt-1">チームのタスクを一元管理</p>
         </div>
 

@@ -8,8 +8,10 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "UNPIS";
+
 export const metadata: Metadata = {
-  title: "UNPIS",
+  title: appName,
   description: "チームのタスクを一元管理するアプリ",
   icons: {
     icon: "/unpis-logo.png",
