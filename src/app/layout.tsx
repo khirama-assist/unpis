@@ -8,18 +8,15 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export function generateMetadata(): Metadata {
-  const appName = process.env.APP_NAME ?? "UNPIS";
-  return {
-    title: appName,
-    description: "チームのタスクを一元管理するアプリ",
-    icons: {
-      icon: "/unpis-logo.png",
-      shortcut: "/unpis-logo.png",
-      apple: "/unpis-logo.png",
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: process.env.APP_NAME ?? "UNPIS",
+  description: "チームのタスクを一元管理するアプリ",
+  icons: {
+    icon: "/unpis-logo.png",
+    shortcut: "/unpis-logo.png",
+    apple: "/unpis-logo.png",
+  },
+};
 
 export default function RootLayout({
   children,
