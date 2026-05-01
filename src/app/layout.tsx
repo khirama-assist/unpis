@@ -9,7 +9,7 @@ const geistSans = Geist({
 });
 
 export function generateMetadata(): Metadata {
-  const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "UNPIS";
+  const appName = process.env.APP_NAME ?? "UNPIS";
   return {
     title: appName,
     description: "チームのタスクを一元管理するアプリ",
